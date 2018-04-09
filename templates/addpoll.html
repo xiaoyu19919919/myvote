@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}投票趣{% endblock %}
+
+{% block content %}
+	<div class="container">
+		{% for message in messages %}
+			<div class="alert alert-{{message.tags}}">{{message}}</div>
+		{% endfor %}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<form name="myform" action="/addpoll/" method="POST">
+							{% csrf_token %}
+							{{poll_form.as_table}}
+							<input type="submit" value="保存">
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+{% endblock %}

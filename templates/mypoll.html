@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}投票趣{% endblock %}
+
+{% block content %}
+	<div class="container">
+		{% for message in messages %}
+			<div class="alert alert-{{message.tags}}">{{message}}</div>
+		{% endfor %}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						{% if user.is_authenticated %}
+							<h3>欢迎光临投票趣：</h3>
+							{% if user.socialaccount_set.all.0.extra_data.name %}
+								{{user.socialaccount_set.all.0.extra_data.name}}
+							{% else %}
+								{{user.username}}
+							{% endif %}
+						{% else %}
+							<p>欢迎登录投票趣</p>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<button class="btn btn-info">
+				目前是第{{polls.number}}页
+			</button>
+			<button class="btn btn-info">
+				<a href="?p=1" style="color:white">第一页</a>
+			</button>
+			{% if polls.has_previous %}
+				<button class="btn btn-info">
+					<a href="?p={{polls.previous_page_number}}" style="color:white">上一页</a>
+				</button>
+			{% endif %}
+			{% if polls.has_next %}
+				<button class="btn btn-info">
+					<a href="?p={{polls.next_page_number}}" style="color:white">下一页</a>
+				</button>
+			{% endif %}
+			<button class="btn btn-info">
+				<a href="?p={{paginator.num_pages}}" style="color:white">最后一页</a>
+			</button>
+			<button class="btn btn-info">
+				<a href="/addpoll/" style="color:white">增加</a>
+			</button>
+		</div>
+		<div>
+			<div class="row">
+				{% load mvote-extra %}
+				{% for poll in polls %}
+					{% if forloop.first %}
+						<div class="list-group">
+					{% endif %}
+						<p class="list-group-item">
+							<a href="{% url 'poll-url' poll.id %}">
+								总票数：{{poll.id | show_votes}},
+								项数：{{poll.id | show_items}},
+								{{poll.name}}, added by:【{{poll.user}}】,
+								created at: {{poll.created_at}}
+							</a>
+							<span style="float:right">
+								<button><a href="{% url 'editpoll-url' poll.id %}">编辑</a></button>
+								<button><a href="{% url 'delpoll-url' poll.id %}">删除</a></button>
+							</span>
+						</p>
+					{% if forloop.last %}
+						</div>
+					{% endif %}
+				{% empty %}
+					<h3><em>暂无可用投票项</em></h3>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+{% endblock %}

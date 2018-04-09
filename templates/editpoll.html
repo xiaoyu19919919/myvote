@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}投票趣{% endblock %}
+
+{% block content %}
+	<script>
+		function showchangename(){
+			$("#myModal").modal("show");
+		}
+		function changename(){
+			$.ajaxSetup({data:{csrfmiddlewaretoken: '{{ csrf_token }}'}});
+			data = {'pollname':$("#pollname").val(), "pollid":{{poll.id}}};
+			console.log(data);
+			$.post("/changename/", data, function(data){
+				if(data.status == "success"){
+					$("#font-pollname").html(data.newname);
+				}else{
+					alert(data.message);
+				}
+			});
+			$("#myModal").modal("hide");
+		}
+	</script>
+	<div class="container">
+		{% for message in messages %}
+			<div class="alert alert-{{message.tags}}">{{message}}</div>
+		{% endfor %}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<p><font size="6" id="font-pollname">{{poll.name}}</font><a onclick="showchangename();" style="cursor:pointer">修改投票主题</a></s>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 修改投票主题模态框（Modal） -->
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+							&times;
+						</button>
+						<h4 class="modal-title" id="myModalLabel">
+							修改投票主题
+						</h4>
+					</div>
+					<div class="modal-body">
+						<input value="{{poll.name}}" id="pollname">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+						</button>
+						<button type="button" class="btn btn-primary" onclick="changename();">
+							提交更改
+						</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal -->
+		</div>
+		
+		
+	</div>
+{% endblock %}
